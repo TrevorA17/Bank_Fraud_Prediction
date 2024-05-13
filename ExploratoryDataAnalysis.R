@@ -78,3 +78,10 @@ print(paste("Range:", range_age[2] - range_age[1]))
 print(paste("Variance:", variance_age))
 print(paste("Standard Deviation:", standard_deviation_age))
 
+# Calculate correlation coefficient for numerical variables
+correlation_matrix <- cor(bank_data[c("transaction_amount", "age")])
+
+# Print correlation matrix
+print("Correlation Matrix:")
+print(correlation_matrix)
+
