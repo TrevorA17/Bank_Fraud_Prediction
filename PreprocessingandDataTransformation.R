@@ -18,3 +18,11 @@ head(bank_data)
 # View the dataset in a separate viewer window
 View(bank_data)
 
+# Check for missing values
+missing_values <- sum(is.na(bank_data))
+
+# Display summary of missing values
+print(paste("Number of missing values:", missing_values))
+
+# Summary of missing values by column
+print(summary(is.na(bank_data)))
