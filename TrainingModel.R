@@ -137,3 +137,46 @@ print(random_forest_model)
 
 print("Gradient Boosting Machines (GBMs) Model:")
 print(gbm_model)
+
+# Load necessary libraries
+library(caret)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define the training control object for model training
+train_control <- trainControl(method = "cv", number = 5)
+
+# Define the models
+models <- list(
+  logistic_regression = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "glm", 
+    trControl = train_control
+  ),
+  decision_trees = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "rpart", 
+    trControl = train_control
+  ),
+  random_forest = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "rf", 
+    trControl = train_control
+  ),
+  gbm = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "gbm", 
+    trControl = train_control
+  )
+)
+
+# Compare model performance using resamples
+model_resamples <- resamples(models)
+
+# Summarize the results
+summary(model_resamples)
