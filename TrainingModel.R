@@ -34,3 +34,29 @@ print("Dimensions of Training Data:")
 print(dim(train_data))
 print("Dimensions of Testing Data:")
 print(dim(test_data))
+
+# Define the number of bootstrap samples
+num_bootstraps <- 1000
+
+# Initialize a vector to store bootstrap statistics
+bootstrap_statistics <- numeric(num_bootstraps)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Perform bootstrapping
+for (i in 1:num_bootstraps) {
+  # Sample with replacement from the dataset
+  bootstrap_sample <- bank_data[sample(nrow(bank_data), replace = TRUE), ]
+  
+  # Calculate the statistic of interest (e.g., mean transaction amount)
+  # For example, let's calculate the mean transaction amount for each bootstrap sample
+  bootstrap_statistics[i] <- mean(bootstrap_sample$transaction_amount)
+}
+
+# Calculate confidence interval (e.g., 95% confidence interval)
+confidence_interval <- quantile(bootstrap_statistics, c(0.025, 0.975))
+
+# Print confidence interval
+print("95% Confidence Interval for Mean Transaction Amount:")
+print(confidence_interval)
