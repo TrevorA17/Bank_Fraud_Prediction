@@ -85,3 +85,18 @@ correlation_matrix <- cor(bank_data[c("transaction_amount", "age")])
 print("Correlation Matrix:")
 print(correlation_matrix)
 
+# Create contingency tables for categorical variables
+contingency_location_fraud_label <- table(bank_data$location, bank_data$fraud_label)
+contingency_merchant_fraud_label <- table(bank_data$merchant, bank_data$fraud_label)
+contingency_gender_fraud_label <- table(bank_data$gender, bank_data$fraud_label)
+
+# Print contingency tables
+print("Contingency Table: Location vs. Fraud Label")
+print(contingency_location_fraud_label)
+
+print("Contingency Table: Merchant vs. Fraud Label")
+print(contingency_merchant_fraud_label)
+
+print("Contingency Table: Gender vs. Fraud Label")
+print(contingency_gender_fraud_label)
+
