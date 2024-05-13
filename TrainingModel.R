@@ -60,3 +60,26 @@ confidence_interval <- quantile(bootstrap_statistics, c(0.025, 0.975))
 # Print confidence interval
 print("95% Confidence Interval for Mean Transaction Amount:")
 print(confidence_interval)
+
+# Load necessary library
+library(caret)
+
+# Define the number of folds
+num_folds <- 5  # You can adjust this as needed
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Create the training control object for k-fold cross-validation
+train_control <- trainControl(method = "cv", number = num_folds)
+
+# Define the model (e.g., logistic regression)
+model <- train(
+  fraud_label ~ .,  # Adjust the formula as needed
+  data = bank_data,
+  method = "glm",  # Adjust the method as needed (e.g., "glm", "rf", "gbm")
+  trControl = train_control
+)
+
+# Print the cross-validation results
+print(model)
