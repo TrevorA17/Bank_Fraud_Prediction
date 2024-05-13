@@ -83,3 +83,57 @@ model <- train(
 
 # Print the cross-validation results
 print(model)
+
+# Load necessary libraries
+library(caret)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define the training control object for model training
+train_control <- trainControl(method = "cv", number = 5)
+
+# Logistic Regression Model
+logistic_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "glm", 
+  trControl = train_control
+)
+
+# Decision Trees Model
+decision_trees_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "rpart", 
+  trControl = train_control
+)
+
+# Random Forest Model
+random_forest_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "rf", 
+  trControl = train_control
+)
+
+# Gradient Boosting Machines (GBMs) Model
+gbm_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "gbm", 
+  trControl = train_control
+)
+
+# Print the model results
+print("Logistic Regression Model:")
+print(logistic_model)
+
+print("Decision Trees Model:")
+print(decision_trees_model)
+
+print("Random Forest Model:")
+print(random_forest_model)
+
+print("Gradient Boosting Machines (GBMs) Model:")
+print(gbm_model)
