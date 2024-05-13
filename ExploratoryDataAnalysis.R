@@ -37,3 +37,23 @@ print(frequency_gender)
 print("Frequency of Fraud Label:")
 print(frequency_fraud_label)
 
+# Calculate measures of central tendency for numerical variables
+mean_transaction_amount <- mean(bank_data$transaction_amount)
+median_transaction_amount <- median(bank_data$transaction_amount)
+mode_transaction_amount <- as.numeric(names(sort(-table(bank_data$transaction_amount))[1]))
+
+mean_age <- mean(bank_data$age)
+median_age <- median(bank_data$age)
+mode_age <- as.numeric(names(sort(-table(bank_data$age))[1]))
+
+# Print measures of central tendency
+print("Measures of Central Tendency for Transaction Amount:")
+print(paste("Mean:", mean_transaction_amount))
+print(paste("Median:", median_transaction_amount))
+print(paste("Mode:", mode_transaction_amount))
+
+print("Measures of Central Tendency for Age:")
+print(paste("Mean:", mean_age))
+print(paste("Median:", median_age))
+print(paste("Mode:", mode_age))
+
