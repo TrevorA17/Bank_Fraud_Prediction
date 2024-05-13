@@ -100,3 +100,12 @@ print(contingency_merchant_fraud_label)
 print("Contingency Table: Gender vs. Fraud Label")
 print(contingency_gender_fraud_label)
 
+# Load necessary libraries (if not already loaded)
+library(stats)
+
+# Perform ANOVA
+anova_result <- aov(transaction_amount ~ location, data = bank_data)
+
+# Print ANOVA results
+print(summary(anova_result))
+
