@@ -109,3 +109,52 @@ anova_result <- aov(transaction_amount ~ location, data = bank_data)
 # Print ANOVA results
 print(summary(anova_result))
 
+# Load necessary libraries
+library(ggplot2)
+library(gridExtra)
+
+# Univariate Plot: Transaction Amount
+univariate_plot_transaction_amount <- ggplot(bank_data, aes(x = transaction_amount)) +
+  geom_histogram(binwidth = 1000, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Transaction Amount", x = "Transaction Amount", y = "Frequency")
+
+# Univariate Plot: Age
+univariate_plot_age <- ggplot(bank_data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "lightgreen", color = "black") +
+  labs(title = "Distribution of Age", x = "Age", y = "Frequency")
+
+# Multivariate Plot: Transaction Amount vs. Age
+multivariate_plot <- ggplot(bank_data, aes(x = transaction_amount, y = age)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  labs(title = "Transaction Amount vs. Age", x = "Transaction Amount", y = "Age")
+
+# Display plots in R
+grid.arrange(univariate_plot_transaction_amount, univariate_plot_age, multivariate_plot, ncol = 2, nrow = 2)
+
+# Boxplot: Transaction Amount by Fraud Label
+boxplot_transaction_amount_fraud_label <- ggplot(bank_data, aes(x = fraud_label, y = transaction_amount, fill = fraud_label)) +
+  geom_boxplot() +
+  labs(title = "Transaction Amount by Fraud Label", x = "Fraud Label", y = "Transaction Amount") +
+  theme_minimal()
+
+# Barplot: Frequency of Fraud Label
+barplot_fraud_label <- ggplot(bank_data, aes(x = factor(fraud_label))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Frequency of Fraud Label", x = "Fraud Label", y = "Frequency") +
+  theme_minimal()
+
+# Barplot: Frequency of Location
+barplot_location <- ggplot(bank_data, aes(x = location)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Frequency of Location", x = "Location", y = "Frequency") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Barplot: Frequency of Merchant
+barplot_merchant <- ggplot(bank_data, aes(x = merchant)) +
+  geom_bar(fill = "coral") +
+  labs(title = "Frequency of Merchant", x = "Merchant", y = "Frequency") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Display plots in R
+grid.arrange(boxplot_transaction_amount_fraud_label, barplot_fraud_label, barplot_location, barplot_merchant, ncol = 2, nrow = 2)
+
