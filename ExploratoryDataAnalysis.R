@@ -57,3 +57,24 @@ print(paste("Mean:", mean_age))
 print(paste("Median:", median_age))
 print(paste("Mode:", mode_age))
 
+
+# Calculate measures of distribution for numerical variables
+range_transaction_amount <- range(bank_data$transaction_amount)
+variance_transaction_amount <- var(bank_data$transaction_amount)
+standard_deviation_transaction_amount <- sd(bank_data$transaction_amount)
+
+range_age <- range(bank_data$age)
+variance_age <- var(bank_data$age)
+standard_deviation_age <- sd(bank_data$age)
+
+# Print measures of distribution
+print("Measures of Distribution for Transaction Amount:")
+print(paste("Range:", range_transaction_amount[2] - range_transaction_amount[1]))
+print(paste("Variance:", variance_transaction_amount))
+print(paste("Standard Deviation:", standard_deviation_transaction_amount))
+
+print("Measures of Distribution for Age:")
+print(paste("Range:", range_age[2] - range_age[1]))
+print(paste("Variance:", variance_age))
+print(paste("Standard Deviation:", standard_deviation_age))
+
