@@ -1,0 +1,406 @@
+---
+title: "Bank Fraud Prediction"
+author: "Trevor Okinda"
+date: "2024"
+output:
+  github_document: 
+    toc: yes
+    toc_depth: 4
+    fig_width: 6
+    fig_height: 4
+    df_print: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Student Details
+
+|                                              |     |
+|----------------------------------------------|-----|
+| **Student ID Number**                        | 134780 |
+| **Student Name**                             | Trevor Okinda |
+| **BBIT 4.2 Group**                           | C |
+| **Project Name**                             | Bank Fraud Prediction |
+
+# Setup Chunk
+
+**Note:** the following KnitR options have been set as the global defaults: <BR> `knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE, collapse = FALSE, tidy = TRUE)`.
+
+More KnitR options are documented here <https://bookdown.org/yihui/rmarkdown-cookbook/chunk-options.html> and here <https://yihui.org/knitr/options/>.
+
+```{r setup, include=FALSE}
+library(formatR)
+knitr::opts_chunk$set(
+  warning = FALSE,
+  collapse = FALSE
+)
+```
+
+### Source: 
+
+The dataset that was used can be downloaded here: *\<https://www.kaggle.com/datasets/sauravmishraa/frauddataset\>*
+
+### Reference:
+
+*\<Mishra, S. (n.d.). Bank Fraud Dataset [Data set]. Kaggle. https://www.kaggle.com/datasets/sauravmishraa/frauddataset\>\
+Refer to the APA 7th edition manual for rules on how to cite datasets: <https://apastyle.apa.org/style-grammar-guidelines/references/examples/data-set-references>*
+
+# Understanding the Dataset (Exploratory Data Analysis (EDA))
+## Loading the Dataset
+```{r Load dataset}
+# Load dataset
+bank_data <- read.csv("fraud_dataset.csv", colClasses = c(
+  transaction_id = "integer",
+  transaction_amount = "numeric",
+  location = "factor",
+  merchant = "factor",
+  age = "numeric",
+  gender = "factor",
+  fraud_label = "factor"
+))
+
+# Display the structure of the dataset
+str(bank_data)
+
+# View the first few rows of the dataset
+head(bank_data)
+
+# View the dataset in a separate viewer window
+View(bank_data)
+```
+
+## Measures of Distribution
+```{r MOD}
+# Calculate measures of distribution for numerical variables
+range_transaction_amount <- range(bank_data$transaction_amount)
+variance_transaction_amount <- var(bank_data$transaction_amount)
+standard_deviation_transaction_amount <- sd(bank_data$transaction_amount)
+
+range_age <- range(bank_data$age)
+variance_age <- var(bank_data$age)
+standard_deviation_age <- sd(bank_data$age)
+
+# Print measures of distribution
+print("Measures of Distribution for Transaction Amount:")
+print(paste("Range:", range_transaction_amount[2] - range_transaction_amount[1]))
+print(paste("Variance:", variance_transaction_amount))
+print(paste("Standard Deviation:", standard_deviation_transaction_amount))
+
+print("Measures of Distribution for Age:")
+print(paste("Range:", range_age[2] - range_age[1]))
+print(paste("Variance:", variance_age))
+print(paste("Standard Deviation:", standard_deviation_age))
+```
+
+## Measures of Relationship
+```{r MOR}
+# Calculate correlation coefficient for numerical variables
+correlation_matrix <- cor(bank_data[c("transaction_amount", "age")])
+
+# Print correlation matrix
+print("Correlation Matrix:")
+print(correlation_matrix)
+
+# Create contingency tables for categorical variables
+contingency_location_fraud_label <- table(bank_data$location, bank_data$fraud_label)
+contingency_merchant_fraud_label <- table(bank_data$merchant, bank_data$fraud_label)
+contingency_gender_fraud_label <- table(bank_data$gender, bank_data$fraud_label)
+
+# Print contingency tables
+print("Contingency Table: Location vs. Fraud Label")
+print(contingency_location_fraud_label)
+
+print("Contingency Table: Merchant vs. Fraud Label")
+print(contingency_merchant_fraud_label)
+
+print("Contingency Table: Gender vs. Fraud Label")
+print(contingency_gender_fraud_label)
+
+```
+
+## ANOVA
+```{r ANOVA}
+# Load necessary libraries (if not already loaded)
+library(stats)
+
+# Perform ANOVA
+anova_result <- aov(transaction_amount ~ location, data = bank_data)
+
+# Print ANOVA results
+print(summary(anova_result))
+```
+
+## Plots
+```{r Plots}
+# Load necessary libraries
+library(ggplot2)
+library(gridExtra)
+
+# Univariate Plot: Transaction Amount
+univariate_plot_transaction_amount <- ggplot(bank_data, aes(x = transaction_amount)) +
+  geom_histogram(binwidth = 1000, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Transaction Amount", x = "Transaction Amount", y = "Frequency")
+
+# Univariate Plot: Age
+univariate_plot_age <- ggplot(bank_data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "lightgreen", color = "black") +
+  labs(title = "Distribution of Age", x = "Age", y = "Frequency")
+
+# Multivariate Plot: Transaction Amount vs. Age
+multivariate_plot <- ggplot(bank_data, aes(x = transaction_amount, y = age)) +
+  geom_point(alpha = 0.5, color = "blue") +
+  labs(title = "Transaction Amount vs. Age", x = "Transaction Amount", y = "Age")
+
+# Display plots in R
+grid.arrange(univariate_plot_transaction_amount, univariate_plot_age, multivariate_plot, ncol = 2, nrow = 2)
+
+# Boxplot: Transaction Amount by Fraud Label
+boxplot_transaction_amount_fraud_label <- ggplot(bank_data, aes(x = fraud_label, y = transaction_amount, fill = fraud_label)) +
+  geom_boxplot() +
+  labs(title = "Transaction Amount by Fraud Label", x = "Fraud Label", y = "Transaction Amount") +
+  theme_minimal()
+
+# Barplot: Frequency of Fraud Label
+barplot_fraud_label <- ggplot(bank_data, aes(x = factor(fraud_label))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Frequency of Fraud Label", x = "Fraud Label", y = "Frequency") +
+  theme_minimal()
+
+# Barplot: Frequency of Location
+barplot_location <- ggplot(bank_data, aes(x = location)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Frequency of Location", x = "Location", y = "Frequency") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Barplot: Frequency of Merchant
+barplot_merchant <- ggplot(bank_data, aes(x = merchant)) +
+  geom_bar(fill = "coral") +
+  labs(title = "Frequency of Merchant", x = "Merchant", y = "Frequency") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Display plots in R
+grid.arrange(boxplot_transaction_amount_fraud_label, barplot_fraud_label, barplot_location, barplot_merchant, ncol = 2, nrow = 2)
+
+
+```
+
+# Preprocessing & Data Prediction
+## Missing Values
+```{r Missing Values}
+# Check for missing values
+missing_values <- sum(is.na(bank_data))
+
+# Display summary of missing values
+print(paste("Number of missing values:", missing_values))
+
+# Summary of missing values by column
+print(summary(is.na(bank_data)))
+
+```
+
+# Training Different Models
+## Data Splitting
+```{r Data Splitting}
+# Load necessary library
+library(caTools)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Split data into training and testing sets (70% training, 30% testing)
+split <- sample.split(bank_data$fraud_label, SplitRatio = 0.7)
+train_data <- subset(bank_data, split == TRUE)
+test_data <- subset(bank_data, split == FALSE)
+
+# Print dimensions of training and testing sets
+print("Dimensions of Training Data:")
+print(dim(train_data))
+print("Dimensions of Testing Data:")
+print(dim(test_data))
+```
+
+## Bootstrapping
+```{r Boot}
+library(boot)
+
+# Define the number of bootstrap samples
+num_bootstraps <- 1000
+
+# Initialize a vector to store bootstrap statistics
+bootstrap_statistics <- numeric(num_bootstraps)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Perform bootstrapping
+for (i in 1:num_bootstraps) {
+  # Sample with replacement from the dataset
+  bootstrap_sample <- bank_data[sample(nrow(bank_data), replace = TRUE), ]
+  
+  # Calculate the statistic of interest (e.g., mean transaction amount)
+  # For example, let's calculate the mean transaction amount for each bootstrap sample
+  bootstrap_statistics[i] <- mean(bootstrap_sample$transaction_amount)
+}
+
+# Calculate confidence interval (e.g., 95% confidence interval)
+confidence_interval <- quantile(bootstrap_statistics, c(0.025, 0.975))
+
+# Print confidence interval
+print("95% Confidence Interval for Mean Transaction Amount:")
+print(confidence_interval)
+```
+
+## Cross-validation
+```{r Cross-Validation}
+# Load necessary library
+library(caret)
+
+# Define the number of folds
+num_folds <- 5  # You can adjust this as needed
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Create the training control object for k-fold cross-validation
+train_control <- trainControl(method = "cv", number = num_folds)
+
+# Define the model (e.g., logistic regression)
+model <- train(
+  fraud_label ~ .,  # Adjust the formula as needed
+  data = bank_data,
+  method = "glm",  # Adjust the method as needed (e.g., "glm", "rf", "gbm")
+  trControl = train_control
+)
+
+# Print the cross-validation results
+print(model)
+
+```
+
+## Training Different Models
+```{r Training Different Models}
+# Load necessary libraries
+library(caret)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define the training control object for model training
+train_control <- trainControl(method = "cv", number = 5)
+
+# Logistic Regression Model
+logistic_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "glm", 
+  trControl = train_control
+)
+
+# Decision Trees Model
+decision_trees_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "rpart", 
+  trControl = train_control
+)
+
+# Random Forest Model
+random_forest_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "rf", 
+  trControl = train_control
+)
+
+# Gradient Boosting Machines (GBMs) Model
+gbm_model <- train(
+  fraud_label ~ ., 
+  data = bank_data, 
+  method = "gbm", 
+  trControl = train_control
+)
+
+# Print the model results
+print("Logistic Regression Model:")
+print(logistic_model)
+
+print("Decision Trees Model:")
+print(decision_trees_model)
+
+print("Random Forest Model:")
+print(random_forest_model)
+
+print("Gradient Boosting Machines (GBMs) Model:")
+print(gbm_model)
+```
+
+## Performance Comparison
+```{r Performance Comparison}
+# Load necessary libraries
+library(caret)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define the training control object for model training
+train_control <- trainControl(method = "cv", number = 5)
+
+# Define the models
+models <- list(
+  logistic_regression = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "glm", 
+    trControl = train_control
+  ),
+  decision_trees = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "rpart", 
+    trControl = train_control
+  ),
+  random_forest = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "rf", 
+    trControl = train_control
+  ),
+  gbm = train(
+    fraud_label ~ ., 
+    data = bank_data, 
+    method = "gbm", 
+    trControl = train_control
+  )
+)
+
+# Compare model performance using resamples
+model_resamples <- resamples(models)
+
+# Summarize the results
+summary(model_resamples)
+
+```
+
+## Saving Model
+```{r Saving Model}
+# Load the saved decision trees model
+loaded_bank_fraud_decision_trees_model <- readRDS("./models/bank_fraud_decision_trees_model.rds")
+
+# Prepare new data for prediction (replace with your actual new data)
+new_bank_data <- data.frame(
+  transaction_id = c(1001, 1002, 1003),  # Example transaction IDs
+  transaction_amount = c(1500, 700, 3000),  # Example transaction amounts
+  location = c("New York", "Chicago", "Los Angeles"),  # Example locations
+  merchant = c("ABC Corp", "XYZ Inc", "ABC Corp"),  # Example merchants
+  age = c(40, 35, 28),  # Example ages
+  gender = c("M", "F", "M")  # Example genders
+)
+
+# Use the loaded model to make predictions for new bank fraud data
+predictions_bank_loaded_model <- predict(loaded_bank_fraud_decision_trees_model, newdata = new_bank_data)
+
+# Print predictions
+print(predictions_bank_loaded_model)
+
+```
+
